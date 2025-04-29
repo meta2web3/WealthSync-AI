@@ -11,18 +11,36 @@ app.use(express.json());
 const provider = new ethers.providers.JsonRpcProvider(process.env.XDC_RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contractAddress = process.env.CONTRACT_ADDRESS;
-const contractABI = require('./TradeExecutor.json').abi;
+const contractABI = require('../../artifacts/contracts/TradeExecutor.sol/TradeExecutor.json').abi;
 const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 
 // Get AI recommendation
 app.get('/recommendation', async (req, res) => {
-  const { profitTarget } = req.query;
-  PythonShell.run('market_analysis.py', { args: [profitTarget] }, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(JSON.parse(results[0]));
+    const { profitTarget } = req.query;
+    try {
+      PythonShell.run('../ai-model/market_analysis.py', {
+        args: [profitTarget],
+        mode: 'text',
+        pythonPath: '/Users/lokesh/projects/blockchain/wealthsync-ai/env/bin/python' // Verify this path
+      }, (err, results) => {
+        if (err) {
+          console.error('PythonShell Error:', err);
+          return res.status(500).json({ error: err.message });
+        }
+        try {
+          const result = JSON.parse(results[0]);
+          res.json(result);
+        } catch (parseErr) {
+          console.error('JSON Parse Error:', parseErr);
+          res.status(500).json({ error: 'Failed to parse AI recommendation' });
+        }
+      });
+    } catch (error) {
+      console.error('Recommendation Error:', error);
+      res.status(500).json({ error: error.message });
+    }
   });
-});
-
+  
 // Approve trade (owner only)
 app.post('/approve/:tradeId', async (req, res) => {
   try {
