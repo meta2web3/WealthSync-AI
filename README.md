@@ -42,8 +42,8 @@ Before setting up the project, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/WealthSync-AI-MVP.git
-cd WealthSync-AI-MVP
+git clone https://github.com/meta2web3/WealthSync-AI.git
+cd WealthSync-AI
 ```
 
 Replace `your-username` with your GitHub username.
@@ -272,9 +272,6 @@ Include:
 - GitHub repository link
 - UI screenshot
 - Deployed contract address
-
-### XDC Network
-Emphasize XDC's low fees and fast transactions in your presentation.
 
 ---
 Built for ETH Dubai Hackathon | Powered by XDC Network
